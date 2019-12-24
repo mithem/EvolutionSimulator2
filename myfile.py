@@ -20,15 +20,15 @@ CONFIG = {
             "speed": 1
         }
     },
-    "iterations": 2
+    "iterations": 12
 }
 
 
 class Cat(Creature):
-    def __init__(self):
-        Creature.__init__(self)
+    pass
 
 
 class Mouse(Creature):
-    def __init__(self):
-        Creature.__init__(self)
+    def __init__(self, **kwargs):
+        Creature.initialize(self, **kwargs)
+        print("mouse born.")

@@ -14,26 +14,26 @@ class World:
         self.update_food_count(iteration, self.food_function)
         for species in self.creatures:
             for creature in self.creatures.get(species):
-                creature.act()
+                action = creature.act()
+                if action == "die":
+                    print("died")
+                    self.creatures[species].pop(0)
 
     def update_food_count(self, iteration, callback):
         self.food_count = callback(iteration, self.initial_food)
 
 
 class Creature:
-    def __init__(self, species="creature-general", name="MyCreature", reproduction_chance=0.1, death_chance=0.1, speed=0.1):
-        self.__species__ = species
-        self.__name__ = name
-        self.__reproduction_chance__ = reproduction_chance
-        self.__death_chance__ = death_chance
-        self.__speed__ = speed
-        self.reset_energy()
+    def __init__(self, **kwargs):
+        self.properties = utils.creatures.get_creature_properties(kwargs)
 
     def reset_energy(self):
-        self.__energy__ = 100
+        self.properties["energy"] = 100
 
     def act(self):
-        pass
+        self.__age__ += self.__age_increments__
+        if self.__age__ > self.__death_age__:
+            return "die"
 
 
 class Trait:

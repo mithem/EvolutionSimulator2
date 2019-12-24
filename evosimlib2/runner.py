@@ -3,13 +3,14 @@ import inspect
 
 
 def main(module, config):
-    w = World(initial_food=config.get("World").get("initial_food"),
-              food_function=config.get("World").get("food_function"))
+    w = World(initial_food=config.get("World").get("initial_food", 100),
+              food_function=config.get("World").get("food_function", functions.base))
     classes = get_classes(module)
     for ccllss in classes:
         w.creatures[ccllss.__name__] = []
         for i in range(config.get("World").get("initial").get("n_" + ccllss.__name__)):
-            w.creatures[ccllss.__name__].append(ccllss())
+            w.creatures[ccllss.__name__].append(ccllss(species=ccllss.__name__, name="My"+ccllss.__name__[0].upper() + ccllss.name[1:], reproduction_chance=config.get(
+                ccllss.__name__).get("reproduction_chance", 0.1), death_chance=config.get(ccllss.__name__).get("death_chance", 0.1), speed=config.get(ccllss.__name__).get("speed", 1)))
     do_iterations(w, config.get("iterations"))
 
 
@@ -17,8 +18,8 @@ def do_iterations(world: World, iterations):
     for iteration in range(iterations):
         world.act(iteration)
         string = str(iteration)
-        for i in world.creatures:
-            string += ", " + str(len(world.creatures.get(i)))
+        for species in world.creatures:
+            string += ", " + str(len(world.creatures.get(species)))
         print(string)
 
 

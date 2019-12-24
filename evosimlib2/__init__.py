@@ -21,11 +21,21 @@ def parse_args():
 
 
 def get_module(file_name):
-    module_name = file_name.replace(os.sep, ".").replace(".py", "")
+    module_name = get_module_name(file_name)
     spec = importlib.util.spec_from_file_location(module_name, file_name)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def get_module_name(file_name):
+    try:
+        module_name = file_name.replace(os.sep, ".").replace(".py", "")
+    except AttributeError:
+        module_name = input(
+            "Path to the file with the source code for the simulation> ")
+        module_name = get_module_name(module_name)
+    return module_name
 
 
 def main():
