@@ -16,6 +16,8 @@ def parse_args():
                         help="File explaining the simulation")
     parser.add_argument("-v", "--version",
                         action="version", version=__version__)
+    parser.add_argument("-d", "--debug", "--verbose", dest="verbose",
+                        action="store_true", help="debug/verbose mode")
     args = parser.parse_args()
     return vars(args)
 
@@ -39,7 +41,10 @@ def get_module_name(file_name):
 
 
 def main():
+    logger = Logger(context="ModuleInit")
     args = parse_args()
+    logger.debug(str(args), args.get("verbose", False))
     module = get_module(args.get("file"))
     config = getattr(module, "CONFIG")
-    runner.main(module, config)
+    logger.debug(str(config), args.get("verbose", False))
+    runner.main(module, config, logger, args.get("verbose", False))
