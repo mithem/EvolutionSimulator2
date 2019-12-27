@@ -5,8 +5,8 @@ def base(x=0, base=0):
     return base
 
 
-def linear(x, base):
-    return x * base * 0.01
+def linear(x=0, base=0):
+    return x * base
 
 
 def sqrt(x, base=0):

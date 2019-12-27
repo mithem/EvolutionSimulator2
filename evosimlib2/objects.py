@@ -13,7 +13,7 @@ class World:
         self.food_count_before = initial_food
         self.food_function = food_function
 
-    def act(self, iteration=0):
+    def act(self, iteration, config):
         self.update_food_count(iteration, self.food_function)
         self.food_count = self.food_count_before
         creature_query = []
@@ -23,24 +23,25 @@ class World:
         random.shuffle(creature_query)
         for creature in creature_query:
             actions = creature.act()
+            if "reproduce" in actions:
+                new_creature = self.get_renewed_creature(creature, config)
+                new_creature.act()
+                self.creatures[creature.properties["species"]].append(
+                    new_creature)
             if "die" in actions:
                 self.kill_creature(creature)
             if "eat" in actions:
                 if self.food_count > 0:
                     creature.eat()
                     self.food_count -= 1
-                actions = creature.act()
-            if "reproduce" in actions:
-                if creature.properties["energy"] >= 10:
-                    self.creatures[creature.properties["species"]].append(
-                        self.get_renewed_creature(creature))
-                elif random.random() <= 0.5:
-                    self.creatures[creature.properties["species"]].append(
-                        self.get_renewed_creature(creature))
+                else:
+                    self.kill_creature(creature)  # really?
 
-    def get_renewed_creature(self, creature):
-        creature.properties["age"] = 0
-        creature.properties["energy"] = 120
+    def get_renewed_creature(self, creature, config):
+        creature.properties["age"] = config.get("Creatures", {}).get(
+            creature.properties["species"]).get("age", 0)
+        creature.properties["energy"] = config.get("Creatures", {}).get(
+            creature.properties["species"]).get("energy", 50)
         return creature
 
     def kill_creature(self, obj):
@@ -73,16 +74,16 @@ class Creature:
         if self.properties["age"] > self.properties["death_age"] or self.properties["energy"] <= 0:
             actions.append("die")
 
+        # dying
+        if random.random() <= self.properties["death_chance"]:
+            actions.append("die")
+
         # eating
         actions.append("eat")
 
         # reproduction
         if random.random() <= self.properties["reproduction_chance"]:
             actions.append("reproduce")
-
-        # dying
-        if random.random() <= self.properties["death_chance"]:
-            actions.append("die")
 
         return actions
 

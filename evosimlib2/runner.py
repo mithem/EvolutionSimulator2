@@ -19,12 +19,12 @@ def main(module, config, logger=Logger(filename="runner_main.txt"), verbose=Fals
             w.creatures[ccllss.__name__].append(c)
         logger.debug("Added " + str(n_of_class) +
                      " instances of " + ccllss.__name__ + " to the world", verbose)
-    data = do_iterations(w, config.get("iterations"), logger)
+    data = do_iterations(w, config.get("iterations"), logger, config)
     logger.save()
     display_data(data)
 
 
-def do_iterations(world: World, iterations, logger=Logger(filename="runner_doIterations.txt")):
+def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations.txt"), config={}):
     logger.set_context("iterations")
     raw_data = {}
     for species in world.creatures:
@@ -34,7 +34,7 @@ def do_iterations(world: World, iterations, logger=Logger(filename="runner_doIte
     csv_lines = []
     try:
         for iteration in range(iterations):
-            world.act(iteration)
+            world.act(iteration, config)
 
             # array logging for matplotlib
             population = 0
@@ -49,8 +49,9 @@ def do_iterations(world: World, iterations, logger=Logger(filename="runner_doIte
             string = str(iteration + 1)
             for species in world.creatures:
                 string += ", " + str(len(world.creatures.get(species)))
-            string += ", " + str(world.food_count) + ", " + str(population)
-            logger.debug(string + f" ({world.food_count_before})", True)
+            string += ", " + str(world.food_count) + ", " + \
+                str(world.food_count_before) + ", " + str(population)
+            logger.debug(string, True)
 
             # reduced (string) logging to csv file (i.e. for later analysis)
             csv_lines.append(string + "\n")
