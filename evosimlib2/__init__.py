@@ -4,6 +4,7 @@ import evosimlib2.runner
 import os
 import importlib
 from evosimlib2.objects import Trait
+from evosimlib2.utils.errors import PropertyError
 from fileloghelper import Logger
 
 __version__ = "0.0.1"
@@ -23,10 +24,13 @@ def parse_args():
 
 
 def get_module(file_name):
-    module_name = get_module_name(file_name)
-    spec = importlib.util.spec_from_file_location(module_name, file_name)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        module_name = get_module_name(file_name)
+        spec = importlib.util.spec_from_file_location(module_name, file_name)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+    except AttributeError as e:
+        raise PropertyError(str(e))
     return module
 
 

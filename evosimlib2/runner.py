@@ -1,14 +1,22 @@
+import evosimlib2.utils
+from evosimlib2.utils.errors import *
 from evosimlib2.objects import *
+from evosimlib2.utils import functions
 from fileloghelper import Logger
 import matplotlib.pyplot as plt
-import inspect
 
 
 def main(module, config, logger=Logger(filename="runner_main.txt"), verbose=False):
     logger.set_context("runner.py > main()")
+    classes = utils.get_classes(module)
+    errors = utils.parse_config(config, classes)
+    for i in errors:
+        if type(i) == ConfigError:
+            logger.error("ConfigError: " + str(i), True)
+        elif type(i) == PropertyError:
+            logger.warning("PropertyError: " + str(i), True)
     w = World(initial_food=config.get("World").get("initial_food", 100),
               food_function=config.get("World").get("food_function", functions.base))
-    classes = get_classes(module)
     for ccllss in classes:
         w.creatures[ccllss.__name__] = []
         n_of_class = config.get("World", {}).get(
@@ -57,6 +65,8 @@ def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations
             csv_lines.append(string + "\n")
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        raise e
     finally:
         logger.save()
         f = open("raw_data.csv", "w")
@@ -68,28 +78,6 @@ def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations
         f.writelines(csv_lines)
         f.close()
         return raw_data
-
-
-def get_classes(module):
-    return [
-        member[1]
-        for member in inspect.getmembers(
-            module,
-            lambda x: is_child_class(x, module)
-        )
-    ]
-
-
-def is_child_class(obj, module):
-    if not inspect.isclass(obj):
-        return False
-    if obj == Creature or obj == World:
-        return False
-    if not obj.__module__.startswith(module.__name__):
-        return False
-    if issubclass(obj, Creature):
-        return True
-    return False
 
 
 def display_data(data):

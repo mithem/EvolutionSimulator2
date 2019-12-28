@@ -1,7 +1,6 @@
 import evosimlib2.utils as utils
 import evosimlib2.utils.functions as functions
 import evosimlib2.utils.traits as traits
-import evosimlib2.utils.creatures as creatures
 import random
 
 
@@ -57,7 +56,7 @@ class World:
 
 class Creature:
     def __init__(self, **kwargs):
-        self.properties = creatures.get_creature_properties(**kwargs)
+        self.properties = utils.get_creature_properties(**kwargs)
 
     def reset_energy(self):
         self.properties["energy"] = 100
