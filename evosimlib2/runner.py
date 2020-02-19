@@ -1,13 +1,18 @@
+import fileloghelper
+import matplotlib.pyplot as plt
+from fileloghelper import Logger
+
 import evosimlib2.utils
-from evosimlib2.utils.errors import *
 from evosimlib2.objects import *
 from evosimlib2.utils import functions
-from fileloghelper import Logger
-import matplotlib.pyplot as plt
+from evosimlib2.utils.errors import *
 
 
-def main(module, config, logger=Logger(filename="runner_main.txt"), verbose=False):
-    logger.set_context("runner.py > main()")
+def main(module, config, logger=None, verbose=False):
+    if logger == None:
+        logger = Logger("runner_main.log", "runner.py > main", autosave=True)
+    else:
+        logger.set_context("runner.py > main()")
     classes = utils.get_classes(module)
     errors = utils.parse_config(config, classes)
     for i in errors:
@@ -32,8 +37,11 @@ def main(module, config, logger=Logger(filename="runner_main.txt"), verbose=Fals
     display_data(data)
 
 
-def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations.txt"), config={}):
-    logger.set_context("iterations")
+def do_iterations(world, iterations, logger=None, config={}):
+    if logger == None:
+        logger = Logger("runner_do_iterations", "iterations", autosave=True)
+    else:
+        logger.set_context("iterations")
     raw_data = {}
     for species in world.creatures:
         raw_data[species] = []
@@ -41,6 +49,15 @@ def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations
     raw_data["population"] = []
     csv_lines = []
     try:
+        species_count = {
+            "iteration": 0,
+            "food_count": world.food_count,
+            "food_count_before": world.food_count_before,
+            "population": 0
+        }
+        for species in world.creatures:
+            species_count[species] = len(species)
+        species_vs = fileloghelper.VarSet(species_count)
         for iteration in range(iterations):
             world.act(iteration, config)
 
@@ -54,16 +71,26 @@ def do_iterations(world, iterations, logger=Logger(filename="runner_doIterations
             raw_data["population"].append(population)
 
             # string for logging & console output
-            string = str(iteration + 1)
+            # string = str(iteration + 1)
+            # for species in world.creatures:
+            #     string += ", " + str(len(world.creatures.get(species)))
+            # string += ", " + str(world.food_count) + ", " + \
+            #     str(world.food_count_before) + ", " + str(population)
+            # logger.debug(string, True)
+
+            species_vs.set("iteration", iteration)
             for species in world.creatures:
-                string += ", " + str(len(world.creatures.get(species)))
-            string += ", " + str(world.food_count) + ", " + \
-                str(world.food_count_before) + ", " + str(population)
-            logger.debug(string, True)
+                species_vs.set(species, len(species))
+            species_vs.set("food_count", world.food_count)
+            species_vs.set("food_count_before", world.food_count_before)
+            species_vs.set("population", population)
+            species_vs.print_variables()
 
             # reduced (string) logging to csv file (i.e. for later analysis)
-            csv_lines.append(string + "\n")
+            #csv_lines.append(string + "\n")
     except KeyboardInterrupt:
+        pass
+    except KeyError:
         pass
     except Exception as e:
         raise e

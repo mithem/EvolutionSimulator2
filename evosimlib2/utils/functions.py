@@ -22,4 +22,4 @@ def negative_parabola(x, base):
 
 
 def fourth_grade(x, base):
-    return (x**4 - (x**2 * 10000)) / 100000
+    return (x**4 + base)

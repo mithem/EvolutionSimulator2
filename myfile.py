@@ -21,7 +21,7 @@ CONFIG = {
             "reproduction_chance": 0.1175
         }
     },
-    "iterations": 115
+    "iterations": 1000
 }
 
 
