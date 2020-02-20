@@ -55,9 +55,12 @@ def do_iterations(world, iterations, logger=None, config={}):
             "food_count_before": world.food_count_before,
             "population": 0
         }
+        mystr = str("iteration, food count, food count before, population")
         for species in world.creatures:
             species_count[species] = len(species)
+            mystr += ", " + species
         species_vs = fileloghelper.VarSet(species_count)
+        print(mystr)
         for iteration in range(iterations):
             world.act(iteration, config)
 
@@ -69,14 +72,6 @@ def do_iterations(world, iterations, logger=None, config={}):
                 population += n_of_animals_in_species
             raw_data["food"].append(world.food_count_before)
             raw_data["population"].append(population)
-
-            # string for logging & console output
-            # string = str(iteration + 1)
-            # for species in world.creatures:
-            #     string += ", " + str(len(world.creatures.get(species)))
-            # string += ", " + str(world.food_count) + ", " + \
-            #     str(world.food_count_before) + ", " + str(population)
-            # logger.debug(string, True)
 
             species_vs.set("iteration", iteration)
             for species in world.creatures:

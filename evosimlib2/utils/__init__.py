@@ -1,3 +1,26 @@
+"""usage:
+CONFIG = {
+    "World": {
+        "initial_food": 1000,
+        "initial": {
+            "n_Cat": 100,
+            "n_Dog": 100
+        },
+        "food_function": functions.base
+    },
+    "Creatures": {
+        "Cat": {
+            "age_increments": 1,
+            "energy": 10,
+            "reproduction_chance": 0.12,
+            "life_efficiency": 1
+        }
+    },
+    "iterations": 1000
+}
+…
+python3 -m evosim2 myfile.py
+"""
 from evosimlib2.objects import *
 from evosimlib2.utils.errors import *
 import inspect
