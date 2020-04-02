@@ -12,7 +12,7 @@ def main(module, config, logger=None, verbose=False):
     if logger == None:
         logger = Logger("runner_main.log", "runner.py > main", autosave=True)
     else:
-        logger.set_context("runner.py > main()")
+        logger.context = "runner.py > main()"
     classes = utils.get_classes(module)
     errors = utils.parse_config(config, classes)
     for i in errors:
@@ -41,7 +41,7 @@ def do_iterations(world, iterations, logger=None, config={}):
     if logger == None:
         logger = Logger("runner_do_iterations", "iterations", autosave=True)
     else:
-        logger.set_context("iterations")
+        logger.context = "iterations"
     raw_data = {}
     for species in world.creatures:
         raw_data[species] = []
