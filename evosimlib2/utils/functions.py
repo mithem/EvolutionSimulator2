@@ -23,3 +23,11 @@ def negative_parabola(x, base):
 
 def fourth_grade(x, base):
     return (x**4 + base)
+
+
+def third_grade(x, base):
+    return (x**3 + base)
+
+
+def exponential(x, base):
+    return(base**x)
